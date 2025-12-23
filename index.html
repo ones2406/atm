@@ -49,6 +49,13 @@ select, input {
     outline: none;
 }
 
+.bank-preview {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #22c55e;
+}
+
 .amount-preview {
     margin-top: 6px;
     font-size: 14px;
@@ -82,7 +89,7 @@ button {
 }
 
 canvas {
-    display: none; /* 🔥 ẨN HOÀN TOÀN BAN ĐẦU */
+    display: none;
     background: #fff;
     padding: 10px;
     border-radius: 10px;
@@ -90,7 +97,7 @@ canvas {
 }
 
 .footer {
-    margin-top: 12px;
+    margin-top: 14px;
     text-align: center;
     font-size: 13px;
     opacity: .85;
@@ -104,10 +111,13 @@ canvas {
     <h1>Tạo QR Chuyển Khoản</h1>
 
     <label>Ngân hàng</label>
-    <select id="bank">
+    <select id="bank" onchange="onBankChange()">
         <option value="TCB">Techcombank</option>
         <option value="MB">MBBank</option>
     </select>
+    <div class="bank-preview" id="bankPreview">
+        Đang chọn: Techcombank
+    </div>
 
     <label>Số tiền (VND)</label>
     <input type="number" id="amount" placeholder="Ví dụ: 50000" oninput="updatePreview()">
@@ -142,6 +152,20 @@ function updatePreview() {
         "Đang nhập: " + money(v) + " VND";
 }
 
+function onBankChange() {
+    const bank = document.getElementById("bank").value;
+    document.getElementById("bankPreview").innerText =
+        "Đang chọn: " + (bank === "MB" ? "MB Bank" : "Techcombank");
+
+    resetQR();
+}
+
+function resetQR() {
+    canvas.style.display = "none";
+    document.getElementById("downloadBtn").style.display = "none";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 function createQR() {
     const bank = document.getElementById("bank").value;
     const amount = document.getElementById("amount").value;
@@ -173,7 +197,7 @@ function createQR() {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.drawImage(img,0,0);
 
-        canvas.style.display = "block";          // 👈 HIỆN KHI CÓ QR
+        canvas.style.display = "block";
         document.getElementById("downloadBtn").style.display = "block";
     };
     img.src = url;
